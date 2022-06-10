@@ -26,16 +26,28 @@ export class TodosService {
   ];
 
   findOne(id: string) {
-    return this.todos.find((todo) => todo.id === Number(id));
+    return {
+      statusCode: 200,
+      statusText: 'success',
+      item: this.todos.find((todo) => todo.id === Number(id))
+    }
   }
 
-  findAll(): Todo[] {
-    return this.todos;
+  findAll(): any {
+    return {
+      statusCode: 200,
+      statusText: 'success',
+      items: this.todos,
+    };
   }
 
   create(todo: CreateTodoDto) {
     this.todos = [...this.todos, todo];
-    return todo;
+    return {
+      statusCode: 201,
+      statusText: 'success',
+      item: todo,
+    };
   }
 
   update(id: string, todo: Todo) {
@@ -53,6 +65,33 @@ export class TodosService {
     }
     if (todo.description) {
       todoToUpdate.description = todo.description;
+    }
+    const updatedTodos = this.todos.map((t) =>
+      t.id !== +id ? t : todoToUpdate,
+    );
+    this.todos = [...updatedTodos];
+    return {
+      statusCode: 200,
+      statusText: 'Updated todo success',
+      item: todoToUpdate,
+    };
+  }
+
+  delete(id: string) {
+    const nbOfTodosBeforeDelete = this.todos.length;
+    this.todos = [...this.todos.filter((t) => t.id !== +id)];
+    if (this.todos.length < nbOfTodosBeforeDelete) {
+      return {
+        statusCode: 200,
+        message: 'Todo deleted success',
+        teletedItem: 1,
+      };
+    } else {
+      return {
+        statusCode: 200,
+        message: 'Todo deleted falled',
+        teletedItem: 0,
+      };
     }
   }
 }

@@ -1,32 +1,41 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { CreateTodoDto } from 'src/dto/create-todo.dto';
 import { Todo } from 'src/interfaces/todo.interface';
 import { TodosService } from './todos.service';
 
 @Controller('todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {}
+  constructor(private readonly todosService: TodosService) { }
 
   @Get(':id')
-  findOne(@Param() params): Todo {
-    return this.todosService.findOne(params.id);
+  @HttpCode(200)
+  findOne(@Param('id') id: string) {
+    return this.todosService.findOne(id);
   }
 
   @Get()
-  findAll(): Todo[] {
+  @HttpCode(200)
+  findAll(): Todo {
     return this.todosService.findAll();
   }
 
   @Post()
+  @HttpCode(201)
   createTodo(@Body() newTodo: CreateTodoDto) {
-    this.todosService.create(newTodo);
-    return newTodo;
+    return this.todosService.create(newTodo);
   }
 
-  //   @Patch(':id')
-  //   updateTodo(@Param('id') id: string, @Body() todo: CreateTodoDto) {
+  @Patch(':id')
+  @HttpCode(200)
+  updateTodo(@Param('id') id: string, @Body() todo: CreateTodoDto) {
+    return this.todosService.update(id, todo);
+  }
 
-  //   }
+  @Delete(':id')
+  @HttpCode(200)
+  deleteTodo(@Param() params) {
+    return this.todosService.delete(params.id);
+  }
 
   // Get and pass in a particular parameter token to the decorator
   /*
